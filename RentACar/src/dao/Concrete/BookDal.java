@@ -11,11 +11,11 @@ public class BookDal implements IBookDal {
 
     private  final Connection conn;
 
-    private static final String SELECT_ALL_QUERY = "SELECT * FROM public.brand ORDER BY id ASC";
-    private static final String INSERT_QUERY = "INSERT INTO public.brand (name) VALUES (?)";
-    private static final String UPDATE_QUERY = "UPDATE public.brand SET name = ? WHERE id = ?";
+    private static final String SELECT_ALL_QUERY = "SELECT * FROM public.book ORDER BY id ASC";
+    private static final String INSERT_QUERY = "INSERT INTO public.book (name) VALUES (?)";
+    private static final String UPDATE_QUERY = "UPDATE public.book SET name = ? WHERE id = ?";
     private static final String DELETE_QUERY = "DELETE FROM public.brand WHERE id = ?";
-    private static final String SELECT_BY_ID_QUERY = "SELECT * FROM public.brand WHERE id = ?";
+    private static final String SELECT_BY_ID_QUERY = "SELECT * FROM public.book WHERE id = ?";
 
     public BookDal() {
         this.conn = Db.getInstance();
