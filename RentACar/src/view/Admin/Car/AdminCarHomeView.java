@@ -1,9 +1,19 @@
 package view.Admin.Car;
 
+import business.Concrete.BrandManager;
 import business.Concrete.CarManager;
+import business.Concrete.ModelManager;
+import business.Handlers.SuccessInformationMessage;
+import business.Helpers.ComboItem;
+import business.Services.IBrandService;
 import business.Services.ICarService;
+import business.Services.IModelService;
+import entity.Brand;
 import entity.Car;
+import entity.Model;
 import entity.User;
+import entity.enums.Fuel;
+import entity.enums.Gear;
 import view.AdminLayout;
 
 import javax.swing.*;
@@ -19,21 +29,24 @@ public class AdminCarHomeView extends AdminLayout {
     private JScrollPane scrl_car;
     private JTable tbl_carList;
     private JButton createButton;
-    private JComboBox cmb_brand;
-    private JComboBox cmb_type;
-    private JComboBox cmb_fuel;
-    private JComboBox cmb_gear;
+    private JComboBox<ComboItem> cmb_brand;
+    private JComboBox<entity.enums.Type> cmb_type;
+    private JComboBox<Fuel> cmb_fuel;
+    private JComboBox<Gear> cmb_gear;
     private JButton searchButton;
     private  User user;
     private JPopupMenu carMenu;
-
+    private IBrandService brandService;
     private ICarService carService;
+    private IModelService modelService;
     private DefaultTableModel defaultTableModel = new DefaultTableModel();
 
     public AdminCarHomeView(User user){
             this.add(container);
             this.user = user;
             this.carService = new CarManager();
+            this.brandService = new BrandManager();
+            this.modelService = new ModelManager();
         this.carMenu = new JPopupMenu();
         this.tbl_carList.addMouseListener(new MouseAdapter() {
             @Override
@@ -50,6 +63,8 @@ public class AdminCarHomeView extends AdminLayout {
             CreateTable();
             CreateCar();
             UpdateCar();
+            DeleteCar();
+
     }
 
 
@@ -101,6 +116,7 @@ public class AdminCarHomeView extends AdminLayout {
                     @Override
                     public void windowClosed(java.awt.event.WindowEvent windowEvent) {
                         CreateTable();
+
                     }
                 });
             }
@@ -108,4 +124,22 @@ public class AdminCarHomeView extends AdminLayout {
 
 
     }
+    public void DeleteCar(){
+
+        this.carMenu.add("Delete").addActionListener(e -> {
+            int selectedRow = tbl_carList.getSelectedRow();
+            if (selectedRow != -1) {
+                int selectedId = Integer.parseInt(tbl_carList.getValueAt(selectedRow, 0).toString());
+
+                SuccessInformationMessage brandUpdated =  this.modelService.delete(selectedId);
+                brandUpdated.showMessageDialog();
+                CreateTable();
+
+
+            }
+        });
+
+
+    }
+
 }

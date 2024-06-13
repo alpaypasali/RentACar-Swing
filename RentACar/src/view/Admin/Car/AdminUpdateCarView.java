@@ -37,7 +37,7 @@ public class AdminUpdateCarView extends JFrame {
 
         for (Model model : this.modelService.getAll())
         {
-            this.cmb_model.addItem(new ComboItem(model.getId(),model.getName()));
+            this.cmb_model.addItem(model.getComboItem());
         }
         this.cmb_color.setModel(new DefaultComboBoxModel<>(Car.Color.values()));
 

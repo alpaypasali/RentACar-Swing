@@ -10,6 +10,7 @@ public interface IModelDal {
     boolean update(Model model);
     boolean delete(int id);
     Model getByid(int id);
+    ArrayList<Model> selectByQuery(String query);
 
 
 }

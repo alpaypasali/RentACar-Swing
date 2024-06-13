@@ -1,5 +1,6 @@
 package entity;
 
+import business.Helpers.ComboItem;
 import entity.enums.Fuel;
 import entity.enums.Gear;
 import entity.enums.Type;
@@ -89,5 +90,8 @@ public class Model {
 
     public void setBrand(Brand brand) {
         this.brand = brand;
+    }
+    public ComboItem getComboItem() {
+        return new ComboItem(this.getId(),this.getBrand().getName() +" - " + this.getName() + " - " + this.getYear());
     }
 }

@@ -1,10 +1,16 @@
 package view.Admin.Model;
 
+import business.Concrete.BrandManager;
 import business.Concrete.ModelManager;
 import business.Handlers.SuccessInformationMessage;
+import business.Helpers.ComboItem;
+import business.Services.IBrandService;
 import business.Services.IModelService;
+import entity.Brand;
 import entity.Model;
 import entity.User;
+import entity.enums.Fuel;
+import entity.enums.Gear;
 import view.Admin.Brand.AdminCreateBrandView;
 import view.AdminLayout;
 
@@ -21,11 +27,18 @@ public class AdminModelHomeView extends AdminLayout {
     private JScrollPane scrl_model;
     private JTable tbl_modelList;
     private JButton createButton;
+    private JComboBox cmb_brand;
+    private JComboBox cmb_type;
+    private JComboBox cmb_fuel;
+    private JComboBox cmb_gear;
+    private JButton searchButton;
     private User user;
     private JPopupMenu brandMenu;
     private IModelService modelService;
     private DefaultTableModel defaultTableModel = new DefaultTableModel();
     private JPopupMenu modelMenu;
+    private IBrandService brandService;
+    Object[] columnNames;
 
 
     public AdminModelHomeView(User user) {
@@ -33,6 +46,7 @@ public class AdminModelHomeView extends AdminLayout {
         this.add(container);
         this.user = user;
         this.modelService = new ModelManager();
+        this.brandService = new BrandManager();
         this.brandMenu = new JPopupMenu();
         guiIntilaze();
         this.tbl_modelList.addMouseListener(new MouseAdapter() {
@@ -45,28 +59,34 @@ public class AdminModelHomeView extends AdminLayout {
                 }
             }
         });
-        CreateTable();
+        CreateTable(null);
         UpdateModel();
         CreateModel();
         DeleteBrand();
+        LoadFilter();
+        GetFilter();
     }
 
-    public void CreateTable() {
-        Object[] columnNames = {"Model ID", "Marka", "Model Adı", "Tip", "Yıl", "Yakıt Türü", "Vites"};
+    public void CreateTable(ArrayList<Object[]> modelList) {
+        this.columnNames =new Object[] {"Model ID", "Marka", "Model Adı", "Tip", "Yıl", "Yakıt Türü", "Vites"};
 
 
-        ArrayList<Object[]> userList = modelService.getForTable(columnNames.length, this.modelService.getAll());
 
-
-        if (userList == null || userList.isEmpty()) {
-            System.out.println("The table is empty. No data available.");
-
-            userList = new ArrayList<>();
-            userList.add(new Object[]{"No data", "", "", "", "", "", ""});
+        if (modelList == null || modelList.isEmpty()) {
+            modelList = modelService.getForTable(this.columnNames.length, this.modelService.getAll());
+            if (modelList == null || modelList.isEmpty()) {
+                System.out.println("The table is empty. No data available.");
+                modelList = new ArrayList<>();
+                modelList.add(new Object[]{"No data", "", "", "", "", "", ""});
+            }
         }
 
 
-        createTable(defaultTableModel, tbl_modelList, columnNames, userList);
+
+
+
+
+        createTable(defaultTableModel, tbl_modelList, columnNames, modelList);
     }
 
     public void UpdateModel() {
@@ -80,7 +100,8 @@ public class AdminModelHomeView extends AdminLayout {
                 editView.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-                        CreateTable();
+                        CreateTable(null);
+                        GetFilter();
                     }
                 });
             }
@@ -98,7 +119,8 @@ public class AdminModelHomeView extends AdminLayout {
                 modelView.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-                        CreateTable();
+                        CreateTable(null);
+                        GetFilter();
                     }
                 });
 
@@ -116,12 +138,50 @@ public class AdminModelHomeView extends AdminLayout {
 
                 SuccessInformationMessage brandUpdated =  this.modelService.delete(selectedId);
                 brandUpdated.showMessageDialog();
-                CreateTable();
+                CreateTable(null);
+                GetFilter();
 
             }
         });
 
 
+    }
+    public void LoadFilter(){
+
+        this.cmb_type.setModel(new DefaultComboBoxModel<>(entity.enums.Type.values()));
+        this.cmb_type.setSelectedItem(null);
+        this.cmb_fuel.setModel(new DefaultComboBoxModel<>(Fuel.values()));
+        this.cmb_fuel.setSelectedItem(null);
+        this.cmb_gear.setModel(new DefaultComboBoxModel<>(Gear.values()));
+        this.cmb_gear.setSelectedItem(null);
+        cmb_brand.removeAllItems();
+        for (Brand brand : this.brandService.getAll())
+        {
+            this.cmb_brand.addItem(new ComboItem(brand.getId(),brand.getName()));
+        }
+
+        this.cmb_brand.setSelectedItem(null);
+
+    }
+
+    public void GetFilter(){
+
+
+        this.searchButton.addActionListener(e ->{
+
+            ComboItem selectedBrand = (ComboItem) this.cmb_brand.getSelectedItem();
+            ArrayList<Model> modelListBySearch = this.modelService.searchForTable(
+                    selectedBrand.getKey(),
+                    (Fuel) cmb_fuel.getSelectedItem(),
+                    (Gear) cmb_gear.getSelectedItem(),
+                    (entity.enums.Type) cmb_type.getSelectedItem()
+
+            );
+            ArrayList<Object[]> modelRowListBySearch = this.modelService.getForTable(this.columnNames.length,modelListBySearch);
+            CreateTable(modelRowListBySearch);
+
+
+        });
     }
 
 }

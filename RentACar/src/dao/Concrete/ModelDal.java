@@ -77,7 +77,19 @@ public class ModelDal implements IModelDal {
         }
         return model;
     }
-
+    @Override
+    public ArrayList<Model> selectByQuery(String query) {
+        ArrayList<Model> modelList = new ArrayList<>();
+        try {
+            ResultSet rs = this.conn.createStatement().executeQuery(query);
+            while (rs.next()) {
+                modelList.add(this.extractUser(rs));
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return modelList;
+    }
     private boolean executeUpdate(String query, Model model) {
         try (PreparedStatement pr = conn.prepareStatement(query)) {
             pr.setString(1, model.getName());

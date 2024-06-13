@@ -8,6 +8,9 @@ import business.Services.IModelService;
 import dao.Abstract.IModelDal;
 import dao.Concrete.ModelDal;
 import entity.Model;
+import entity.enums.Fuel;
+import entity.enums.Gear;
+import entity.enums.Type;
 
 import java.util.ArrayList;
 
@@ -115,6 +118,33 @@ public class ModelManager implements IModelService {
             return null;
 
         }
+    }
+    @Override
+    public ArrayList<Model> searchForTable(int brandId , Fuel fuel , Gear gear, Type type){
+        String select = "SELECT * FROM public.model";
+        ArrayList<String> whereList = new ArrayList<>();
+
+        if (brandId != 0){
+            whereList.add("brand_id = " + brandId);
+        }
+        if (fuel != null){
+            whereList.add("fuel ='" + fuel + "'");
+        }
+        if (gear != null){
+            whereList.add("gear ='" + gear + "'");
+        }
+        if (type != null){
+            whereList.add("type ='" + type + "'");
+        }
+
+        String whereStr = String.join(" AND ", whereList);
+        String query = select;
+        if (whereStr.length() > 0){
+            query = query + " WHERE " + whereStr;
+        }
+
+        return this.modelDal.selectByQuery(query);
+
     }
 
     @Override
