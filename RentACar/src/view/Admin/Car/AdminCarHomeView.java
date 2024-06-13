@@ -29,14 +29,9 @@ public class AdminCarHomeView extends AdminLayout {
     private JScrollPane scrl_car;
     private JTable tbl_carList;
     private JButton createButton;
-    private JComboBox<ComboItem> cmb_brand;
-    private JComboBox<entity.enums.Type> cmb_type;
-    private JComboBox<Fuel> cmb_fuel;
-    private JComboBox<Gear> cmb_gear;
-    private JButton searchButton;
     private  User user;
     private JPopupMenu carMenu;
-    private IBrandService brandService;
+
     private ICarService carService;
     private IModelService modelService;
     private DefaultTableModel defaultTableModel = new DefaultTableModel();
@@ -45,7 +40,6 @@ public class AdminCarHomeView extends AdminLayout {
             this.add(container);
             this.user = user;
             this.carService = new CarManager();
-            this.brandService = new BrandManager();
             this.modelService = new ModelManager();
         this.carMenu = new JPopupMenu();
         this.tbl_carList.addMouseListener(new MouseAdapter() {
@@ -66,8 +60,6 @@ public class AdminCarHomeView extends AdminLayout {
             DeleteCar();
 
     }
-
-
 
     public void CreateTable(){
         Object[] columnNames = {"ID", "Brand", "Model", "Plate", "Color", "KM", "Year" , "Type" , "Fuel" , "Gear"};
