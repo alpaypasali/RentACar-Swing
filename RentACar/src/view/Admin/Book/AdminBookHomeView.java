@@ -53,7 +53,7 @@ public class AdminBookHomeView extends AdminLayout {
             System.out.println("The table is empty. No data available.");
 
             booklist = new ArrayList<>();
-            booklist.add(new Object[]{"No data"});
+            booklist.add(new Object[]{"No reservation"});
         }
 
         createTable(defaultTableModel, tbl_reservations, columnNames, booklist);
