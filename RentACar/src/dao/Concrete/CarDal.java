@@ -76,6 +76,21 @@ public class CarDal implements ICarDal {
         }
         return car;
     }
+
+    @Override
+    public ArrayList<Car> selectByQuery(String query) {
+        ArrayList<Car> carArrayList = new ArrayList<>();
+        try {
+            ResultSet rs = this.conn.createStatement().executeQuery(query);
+            while (rs.next()) {
+                carArrayList.add(this.extractCar(rs));
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return carArrayList;
+    }
+
     private boolean executeUpdate(String query, Car car) {
         try (PreparedStatement pr = conn.prepareStatement(query)) {
             pr.setInt(1, car.getModel_id());

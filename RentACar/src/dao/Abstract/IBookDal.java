@@ -12,4 +12,5 @@ public interface IBookDal {
     boolean delete(int id);
     Book getByid(int id);
     ArrayList<Book> selectByQuery(String query);
+    ArrayList<Book> getAll(int id);
 }

@@ -11,4 +11,5 @@ public interface ICarDal {
     boolean update(Car car);
     boolean delete(int id);
     Car getByid(int id);
+    ArrayList<Car> selectByQuery(String query);
 }

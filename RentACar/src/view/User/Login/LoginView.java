@@ -6,6 +6,7 @@ import business.Helpers.FrameHelper;
 import business.Services.IUserService;
 import entity.User;
 import view.Admin.AdminHomeView;
+import view.Home.HomeView;
 import view.User.Register.RegisterView;
 
 import javax.swing.*;
@@ -35,6 +36,10 @@ public class LoginView extends JFrame {
                     if(user.getData().getRole().equals("admin")){
                         AdminHomeView adminHomeView = new AdminHomeView(user.getData());
 
+                    }
+                    else{
+
+                        HomeView homeView = new HomeView(user.getData());
                     }
                     dispose();
                 }

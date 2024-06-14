@@ -2,6 +2,7 @@ package view.Admin;
 
 import business.Helpers.FrameHelper;
 import entity.User;
+import view.Admin.Book.AdminBookHomeView;
 import view.Admin.Brand.AdminBrandHomeView;
 import view.Admin.Car.AdminCarHomeView;
 import view.Admin.Model.AdminModelHomeView;
@@ -49,6 +50,12 @@ public class AdminHomeView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 AdminCarHomeView carHomeView = new AdminCarHomeView(user);
+            }
+        });
+        btn_mngBooks.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AdminBookHomeView adminBookHomeView = new AdminBookHomeView(user);
             }
         });
     }

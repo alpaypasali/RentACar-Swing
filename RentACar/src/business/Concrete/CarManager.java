@@ -6,18 +6,28 @@ import business.Handlers.ErrorHandler;
 import business.Handlers.SuccessInformationMessage;
 import business.Services.ICarService;
 import com.sun.tools.jconsole.JConsoleContext;
+import dao.Abstract.IBookDal;
 import dao.Abstract.ICarDal;
+import dao.Concrete.BookDal;
 import dao.Concrete.CarDal;
+import entity.Book;
 import entity.Car;
 import entity.Model;
+import entity.enums.Fuel;
+import entity.enums.Gear;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CarManager implements ICarService{
     private ICarDal carDal;
+    private IBookDal bookDal;
 
    public  CarManager(){
        this.carDal = new CarDal();
+       this.bookDal = new BookDal();
    }
 
     @Override
@@ -132,6 +142,48 @@ public class CarManager implements ICarService{
         }
         return modelObjList;
     }
+    @Override
+    public ArrayList<Car> searchForBooking(String strt_date, String fnsh_date, entity.enums.Type type, Fuel fuel, Gear gear) {
+
+        strt_date = LocalDate.parse(strt_date, DateTimeFormatter.ofPattern("dd/MM/yyyy")).toString();
+        fnsh_date = LocalDate.parse(fnsh_date, DateTimeFormatter.ofPattern("dd/MM/yyyy")).toString();
+
+
+        ArrayList<String> where = new ArrayList<>();
+        if (type != null) where.add("m.type = '" + type + "'");
+        if (fuel != null) where.add("m.fuel = '" + fuel + "'");
+        if (gear != null) where.add("m.gear = '" + gear + "'");
+
+
+        String query = "SELECT * FROM public.car AS c LEFT JOIN public.model AS m ON c.model_id = m.id";
+        if (!where.isEmpty()) query += " WHERE " + String.join(" AND ", where);
+
+
+        ArrayList<Car> searchedCarList = this.carDal.selectByQuery(query);
+
+
+        String bookQuery = String.format(
+                "SELECT * FROM public.book WHERE " +
+                        "'%s' BETWEEN start_date AND finish_date OR " +
+                        "'%s' BETWEEN start_date AND finish_date OR " +
+                        "start_date BETWEEN '%s' AND '%s' OR " +
+                        "finish_date BETWEEN '%s' AND '%s'",
+                strt_date, fnsh_date, strt_date, fnsh_date, strt_date, fnsh_date
+        );
+
+
+        ArrayList<Book> bookList = this.bookDal.selectByQuery(bookQuery);
+        ArrayList<Integer> busyCarId = new ArrayList<>();
+        for (Book book : bookList) {
+            busyCarId.add(book.getCar_id());
+        }
+
+
+        searchedCarList.removeIf(car -> busyCarId.contains(car.getId()));
+
+        return searchedCarList;
+    }
+
 
     private  void CarCannotBeEmpty(Car car) throws BusinessException {
 
